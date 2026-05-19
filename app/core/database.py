@@ -102,6 +102,17 @@ def ensure_db():
             count      INTEGER DEFAULT 0,
             avg_risk   REAL DEFAULT 0.0
         );
+        CREATE TABLE IF NOT EXISTS cross_article_links (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            article_id  INTEGER NOT NULL,
+            linked_id   INTEGER NOT NULL,
+            link_type   TEXT,
+            score       REAL DEFAULT 0.0,
+            modules     TEXT DEFAULT '',
+            UNIQUE(article_id, linked_id) ON CONFLICT REPLACE,
+            FOREIGN KEY(article_id) REFERENCES articles(id),
+            FOREIGN KEY(linked_id)  REFERENCES articles(id)
+        );
         CREATE TABLE IF NOT EXISTS article_links_cross (
             id         INTEGER PRIMARY KEY AUTOINCREMENT,
             article_id INTEGER NOT NULL,
@@ -221,7 +232,8 @@ def load_all_articles() -> pd.DataFrame:
     try:
         conn = get_conn()
         df   = pd.read_sql("""
-            SELECT a.*, s.keyword as session_keyword, s.module as session_module
+            SELECT a.*, s.keyword as session_keyword, s.module as session_module,
+                   s.module as module
             FROM articles a JOIN sessions s ON a.session_id=s.id
             ORDER BY a.published_at DESC
         """, conn)
@@ -237,12 +249,35 @@ def update_article_links(article_id: int, linked_modules: list):
     conn.commit(); conn.close()
 
 # ── Article Links ─────────────────────────────────────────────────────────────
-def save_article_link(article_id: int, module: str, score: float, label: str, detail: str):
+def save_article_link(article_id, linked_id_or_module, link_type_or_score=None,
+                      score_or_label=None, modules_or_detail=None):
+    """Two call signatures:
+    • Legacy:  save_article_link(article_id, module_str, score, label, detail)
+    • Linker:  save_article_link(article_id, linked_id, link_type, score, modules_list)
+    """
     conn = get_conn()
-    conn.execute("""
-        INSERT OR REPLACE INTO article_links (article_id, module, score, label, detail)
-        VALUES (?,?,?,?,?)
-    """, (article_id, module, score, label, detail))
+    # Detect which signature: linker passes linked_id (int) as 2nd arg
+    if isinstance(linked_id_or_module, int):
+        linked_id = linked_id_or_module
+        link_type = link_type_or_score
+        score     = float(score_or_label or 0)
+        modules   = modules_or_detail or []
+        mod_str   = ",".join(modules) if isinstance(modules, list) else str(modules)
+        conn.execute("""
+            INSERT INTO cross_article_links
+                (article_id, linked_id, link_type, score, modules)
+            VALUES (?,?,?,?,?)
+        """, (article_id, linked_id, link_type, score, mod_str))
+    else:
+        # Legacy: (article_id, module, score, label, detail)
+        module = linked_id_or_module
+        score  = link_type_or_score
+        label  = score_or_label
+        detail = modules_or_detail
+        conn.execute("""
+            INSERT OR REPLACE INTO article_links (article_id, module, score, label, detail)
+            VALUES (?,?,?,?,?)
+        """, (article_id, module, score, label, detail))
     conn.commit(); conn.close()
 
 def load_article_links(article_id: int) -> list:
@@ -254,6 +289,62 @@ def load_article_links(article_id: int) -> list:
         conn.close()
         return [{"module":r[2],"score":r[3],"label":r[4],"detail":r[5]} for r in rows]
     except Exception: return []
+
+def get_article_links(article_id: int) -> pd.DataFrame:
+    """Return cross-article links for one article as a DataFrame.
+    Columns: linked_id, linked_module, link_type, score,
+             linked_title, linked_source, linked_url,
+             hoax_score, hate_score, threat_score, severity, location.
+    """
+    try:
+        conn = get_conn()
+        # Cross-article links (from linker)
+        try:
+            rows = pd.read_sql("""
+                SELECT
+                    cl.linked_id,
+                    cl.link_type,
+                    cl.score,
+                    cl.modules                      AS modules_str,
+                    a.title                         AS linked_title,
+                    a.source                        AS linked_source,
+                    a.url                           AS linked_url,
+                    a.hoax_score,
+                    a.hate_score,
+                    a.threat_score,
+                    a.severity,
+                    a.location,
+                    s.module                        AS linked_module
+                FROM cross_article_links cl
+                JOIN articles a  ON cl.linked_id = a.id
+                JOIN sessions s  ON a.session_id  = s.id
+                WHERE cl.article_id = ?
+                ORDER BY cl.score DESC
+            """, conn, params=(article_id,))
+        except Exception:
+            rows = pd.DataFrame()
+        conn.close()
+        return rows
+    except Exception:
+        return pd.DataFrame()
+
+def get_article_by_id(article_id: int) -> dict:
+    """Return a single article row as a dict, or {} if not found."""
+    try:
+        conn = get_conn()
+        row  = conn.execute(
+            "SELECT * FROM articles WHERE id=?", (article_id,)
+        ).fetchone()
+        conn.close()
+        if row is None:
+            return {}
+        cols = ["id","session_id","title","description","content","source","url",
+                "published_at","sentiment","hoax_score","hate_score","provok_score",
+                "threat_score","threat_dominant","risk_score","location","province",
+                "lat","lon","inc_type","severity","entities","linked_modules"]
+        return dict(zip(cols, row))
+    except Exception:
+        return {}
 
 # ── Entities ──────────────────────────────────────────────────────────────────
 def save_entities(session_id: int, entity_counter_or_list, co_occur: dict = None):
