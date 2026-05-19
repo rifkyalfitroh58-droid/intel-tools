@@ -12,7 +12,7 @@ DB_PATH      = os.path.join(os.getenv("STREAMLIT_DATA_DIR", "/tmp"), "osint_suit
 REPORTS_DIR  = os.path.join(BASE_DIR, "reports")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY", "isi_api_key_kamu_di_sini")
 
-# Flat hex string — dipakai langsung sebagai warna (mis. _hex_to_rgb, plotly, css)
+# ── Module colours — flat hex string ─────────────────────────────────────────
 MODULE_COLORS = {
     "person": "#4FC3F7",
     "threat": "#E74C3C",
@@ -30,6 +30,40 @@ MODULE_LABELS = {"person":"Person Intel","threat":"Threat Intel","geo":"Geo Inte
 MODULE_ICONS  = {"person":"◈","threat":"⚠","geo":"◉","media":"◎"}
 LINK_THRESHOLDS = {"person":0,"threat":40,"geo":1,"media":2}
 
+# ── Plotly dark theme — dipakai semua modul ──────────────────────────────────
+PLOT_THEME = {
+    "paper_bgcolor": "#070d14",
+    "plot_bgcolor":  "#070d14",
+    "font":          {"family": "DM Mono, monospace", "color": "rgba(255,255,255,.7)", "size": 11},
+    "margin":        {"l": 40, "r": 20, "t": 40, "b": 40},
+    "xaxis": {
+        "gridcolor":     "rgba(255,255,255,.05)",
+        "linecolor":     "rgba(255,255,255,.1)",
+        "tickfont":      {"size": 10},
+        "showgrid":      True,
+    },
+    "yaxis": {
+        "gridcolor":     "rgba(255,255,255,.05)",
+        "linecolor":     "rgba(255,255,255,.1)",
+        "tickfont":      {"size": 10},
+        "showgrid":      True,
+    },
+    "legend": {
+        "bgcolor":       "rgba(0,0,0,0)",
+        "font":          {"size": 10},
+    },
+    "colorway": ["#4FC3F7","#E74C3C","#2ECC71","#F39C12","#9B59B6","#1ABC9C"],
+}
+
+# ── Threat categories ─────────────────────────────────────────────────────────
+THREAT_CATEGORIES = {
+    "HOAX":     {"label": "Hoaks / Disinformasi", "color": "#E74C3C", "icon": "🔴"},
+    "HATE":     {"label": "Ujaran Kebencian",      "color": "#E67E22", "icon": "🟠"},
+    "PROVOK":   {"label": "Provokasi",             "color": "#F39C12", "icon": "🟡"},
+    "THREAT":   {"label": "Ancaman Keamanan",      "color": "#9B59B6", "icon": "🟣"},
+    "NORMAL":   {"label": "Normal",                "color": "#2ECC71", "icon": "🟢"},
+}
+
 THREAT_LEVELS = {
     "CRITICAL":(80,100,"🔴 KRITIS","#E74C3C"),
     "HIGH":(60,79,"🟠 TINGGI","#E67E22"),
@@ -44,13 +78,13 @@ RISK_LEVELS = {
 ENTITY_COLORS  = {"PERSON":"#E74C3C","ORG":"#3498DB","GPE":"#2ECC71","MONEY":"#F39C12","EVENT":"#9B59B6","PRODUCT":"#1ABC9C"}
 ENTITY_LABELS  = {"PERSON":"Individu","ORG":"Organisasi","GPE":"Lokasi/Negara","MONEY":"Finansial","EVENT":"Kejadian","PRODUCT":"Produk"}
 INCIDENT_TYPES = {
-    "BENCANA":{"label":"Bencana Alam","color":"#E74C3C","icon":"🌊"},
-    "KONFLIK":{"label":"Konflik Sosial","color":"#E67E22","icon":"⚔"},
-    "KRIMINAL":{"label":"Kriminal","color":"#9B59B6","icon":"🔫"},
-    "POLITIK":{"label":"Politik","color":"#3498DB","icon":"🏛"},
-    "EKONOMI":{"label":"Ekonomi","color":"#F39C12","icon":"💰"},
-    "KESEHATAN":{"label":"Kesehatan","color":"#2ECC71","icon":"🏥"},
-    "LAINNYA":{"label":"Lainnya","color":"#95A5A6","icon":"📌"},
+    "BENCANA":  {"label":"Bencana Alam",    "color":"#E74C3C","icon":"🌊"},
+    "KONFLIK":  {"label":"Konflik Sosial",  "color":"#E67E22","icon":"⚔"},
+    "KRIMINAL": {"label":"Kriminal",        "color":"#9B59B6","icon":"🔫"},
+    "POLITIK":  {"label":"Politik",         "color":"#3498DB","icon":"🏛"},
+    "EKONOMI":  {"label":"Ekonomi",         "color":"#F39C12","icon":"💰"},
+    "KESEHATAN":{"label":"Kesehatan",       "color":"#2ECC71","icon":"🏥"},
+    "LAINNYA":  {"label":"Lainnya",         "color":"#95A5A6","icon":"📌"},
 }
 HOAX_KEYWORDS = ["terbukti","faktanya","yang sebenarnya","disembunyikan","rahasia","konspirasi",
     "agenda tersembunyi","vaksin berbahaya","plandemi","segera sebarkan",
@@ -60,16 +94,16 @@ HATE_KEYWORDS = ["kafir","munafik","pengkhianat bangsa","usir","bunuh","habisi",
 PROVOKASI_KEYWORDS = ["bangkit","lawan rezim","turunkan","gulingkan","people power",
     "massa turun","demo besar","ultimatum","rakyat marah","habis kesabaran"]
 INCIDENT_KEYWORDS = {
-    "BENCANA":["gempa","banjir","longsor","tsunami","erupsi","kebakaran hutan","bencana","korban",
-               "evakuasi","earthquake","flood","landslide","disaster","eruption"],
-    "KONFLIK":["bentrokan","tawuran","kerusuhan","konflik","demonstrasi","unjuk rasa","ricuh",
-               "riot","clash","protest","unrest","violence"],
-    "KRIMINAL":["pembunuhan","pencurian","perampokan","penipuan","korupsi","narkoba",
-                "penangkapan","tersangka","murder","robbery","fraud","corruption","arrested"],
-    "POLITIK":["pilkada","pemilu","pilpres","gubernur","bupati","politik","partai","kampanye",
-               "election","political","parliament"],
-    "EKONOMI":["PHK","inflasi","harga naik","kemiskinan","pengangguran","investasi","rupiah",
-               "ekonomi","layoff","inflation","poverty","economy"],
+    "BENCANA":  ["gempa","banjir","longsor","tsunami","erupsi","kebakaran hutan","bencana","korban",
+                 "evakuasi","earthquake","flood","landslide","disaster","eruption"],
+    "KONFLIK":  ["bentrokan","tawuran","kerusuhan","konflik","demonstrasi","unjuk rasa","ricuh",
+                 "riot","clash","protest","unrest","violence"],
+    "KRIMINAL": ["pembunuhan","pencurian","perampokan","penipuan","korupsi","narkoba",
+                 "penangkapan","tersangka","murder","robbery","fraud","corruption","arrested"],
+    "POLITIK":  ["pilkada","pemilu","pilpres","gubernur","bupati","politik","partai","kampanye",
+                 "election","political","parliament"],
+    "EKONOMI":  ["PHK","inflasi","harga naik","kemiskinan","pengangguran","investasi","rupiah",
+                 "ekonomi","layoff","inflation","poverty","economy"],
     "KESEHATAN":["wabah","penyakit","virus","pandemi","rumah sakit","pasien","vaksin",
                  "outbreak","disease","epidemic","hospital"],
 }
