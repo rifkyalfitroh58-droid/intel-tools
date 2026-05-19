@@ -12,7 +12,15 @@ DB_PATH      = os.path.join(os.getenv("STREAMLIT_DATA_DIR", "/tmp"), "osint_suit
 REPORTS_DIR  = os.path.join(BASE_DIR, "reports")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY", "isi_api_key_kamu_di_sini")
 
+# Flat hex string — dipakai langsung sebagai warna (mis. _hex_to_rgb, plotly, css)
 MODULE_COLORS = {
+    "person": "#4FC3F7",
+    "threat": "#E74C3C",
+    "geo":    "#2ECC71",
+    "media":  "#F39C12",
+}
+# Detail bg/border untuk komponen CSS
+MODULE_COLOR_DETAIL = {
     "person": {"primary":"#4FC3F7","bg":"rgba(79,195,247,.1)","border":"rgba(79,195,247,.3)"},
     "threat": {"primary":"#E74C3C","bg":"rgba(231,76,60,.1)","border":"rgba(231,76,60,.3)"},
     "geo":    {"primary":"#2ECC71","bg":"rgba(46,204,113,.1)","border":"rgba(46,204,113,.3)"},
