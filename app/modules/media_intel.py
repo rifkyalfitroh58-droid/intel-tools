@@ -92,7 +92,7 @@ def _source_network(df_art: pd.DataFrame):
 def render_media_intel(monitor_id: int, monitor_kw: str):
     st.markdown(BASE_CSS + module_css("media"), unsafe_allow_html=True)
     render_header("media", monitor_kw,
-                  unread_alerts=get_global_stats().get("alerts", 0))
+                  unread_alerts=get_global_stats().get("unread_alerts", 0))
 
     if not monitor_id:
         st.info("👈 Tambah keyword di sidebar untuk mulai analisis.")
@@ -263,10 +263,12 @@ def render_media_intel(monitor_id: int, monitor_kw: str):
             df_ts["date"] = df_ts["published_at"].dt.date
             top_srcs = df_art["source"].value_counts().head(5).index.tolist()
             _pt = {**PLOT_THEME,
-                   "plot_bgcolor":"#070c06",
-                   "paper_bgcolor":"#0a0e09"}
-            _pt["xaxis"]["gridcolor"] = "#3d3515"
-            _pt["yaxis"]["gridcolor"] = "#3d3515"
+                   "plot_bgcolor":  "#070c06",
+                   "paper_bgcolor": "#0a0e09",
+                   "xaxis": dict(showgrid=True, gridcolor="#3d3515",
+                                 tickfont=dict(color="rgba(255,255,255,0.4)")),
+                   "yaxis": dict(showgrid=True, gridcolor="#3d3515",
+                                 tickfont=dict(color="rgba(255,255,255,0.4)"))}
 
             fig_vel = go.Figure()
             for i, src in enumerate(top_srcs):

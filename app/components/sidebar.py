@@ -13,6 +13,12 @@ from core.fetcher import fetch_articles
 from core.linker import build_links
 
 
+
+def _hex_rgb(h: str) -> str:
+    h = h.lstrip("#")
+    return ",".join(str(int(h[i:i+2], 16)) for i in (0, 2, 4))
+
+
 def _clear_cache():
     for key in list(st.session_state.keys()):
         if key.startswith("cache_"):
@@ -208,7 +214,3 @@ def render_sidebar(current_module: str):
 
     return monitor_id, monitor_kw
 
-
-def _hex_rgb(h: str) -> str:
-    h = h.lstrip("#")
-    return ",".join(str(int(h[i:i+2], 16)) for i in (0, 2, 4))

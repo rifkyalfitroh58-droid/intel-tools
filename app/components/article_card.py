@@ -42,12 +42,8 @@ def render_article_card(row: dict, current_module: str,
     hate_sc    = float(row.get("hate_score",0))
     severity   = float(row.get("severity",0))
     location   = row.get("location","")
-    province   = row.get("province","")
 
     threat_color = get_threat_color(threat_sc)
-    box_cls = ("critical" if threat_sc >= 80 else
-               "high"     if threat_sc >= 60 else
-               "medium"   if threat_sc >= 40 else "low")
 
     # Badge modul terhubung
     badges = get_link_badges(article_id) if show_badges and article_id > 0 else []

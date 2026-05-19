@@ -156,6 +156,15 @@ def get_session_by_id(sid: int) -> dict:
 
 def delete_session(sid: int):
     conn = get_conn()
+    # Delete cross_article_links for articles in this session
+    conn.execute("""
+        DELETE FROM cross_article_links WHERE article_id IN
+        (SELECT id FROM articles WHERE session_id=?)
+    """, (sid,))
+    conn.execute("""
+        DELETE FROM cross_article_links WHERE linked_id IN
+        (SELECT id FROM articles WHERE session_id=?)
+    """, (sid,))
     for tbl in ["article_links","alerts","narratives","relations","entities","articles"]:
         conn.execute(f"DELETE FROM {tbl} WHERE {'article_id' if tbl == 'article_links' else 'session_id'}=?",
                      (sid,))
@@ -451,7 +460,7 @@ def get_global_stats() -> dict:
         except Exception:
             mon = sess
         try:
-            links = conn.execute("SELECT COUNT(*) FROM article_links").fetchone()[0]
+            links = conn.execute("SELECT COUNT(*) FROM cross_article_links").fetchone()[0]
         except Exception:
             links = 0
         # Per-module stats

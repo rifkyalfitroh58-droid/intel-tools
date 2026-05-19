@@ -232,16 +232,18 @@ def render_report():
             conn = get_conn()
             df_links = pd.read_sql("""
                 SELECT
-                    al.link_type, al.score, al.modules,
-                    a1.title as title_a, a1.module as mod_a,
+                    cl.link_type, cl.score, cl.modules,
+                    a1.title as title_a, s1.module as mod_a,
                     a1.source as src_a, a1.threat_score as thr_a,
-                    a2.title as title_b, a2.module as mod_b,
+                    a2.title as title_b, s2.module as mod_b,
                     a2.source as src_b, a2.threat_score as thr_b
-                FROM article_links al
-                JOIN articles a1 ON al.article_id = a1.id
-                JOIN articles a2 ON al.linked_id   = a2.id
-                WHERE a1.module != a2.module
-                ORDER BY al.score DESC
+                FROM cross_article_links cl
+                JOIN articles a1 ON cl.article_id = a1.id
+                JOIN articles a2 ON cl.linked_id  = a2.id
+                JOIN sessions s1  ON a1.session_id = s1.id
+                JOIN sessions s2  ON a2.session_id = s2.id
+                WHERE s1.module != s2.module
+                ORDER BY cl.score DESC
                 LIMIT 50
             """, conn)
             conn.close()

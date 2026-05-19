@@ -33,7 +33,7 @@ def _get_sev_label(score: float) -> str:
 def render_geo_intel(monitor_id: int, monitor_kw: str):
     st.markdown(BASE_CSS + module_css("geo"), unsafe_allow_html=True)
     render_header("geo", monitor_kw,
-                  unread_alerts=get_global_stats().get("alerts", 0))
+                  unread_alerts=get_global_stats().get("unread_alerts", 0))
 
     if not monitor_id:
         st.info("👈 Tambah keyword di sidebar untuk mulai analisis.")
@@ -187,15 +187,15 @@ def render_geo_intel(monitor_id: int, monitor_kw: str):
         if df_prov.empty:
             st.info("Belum ada data statistik provinsi.")
         else:
-            df_prov_s = df_prov.sort_values("incident_count", ascending=True).tail(20)
-            colors_p  = [get_sev_color(s) for s in df_prov_s["avg_severity"]]
+            df_prov_s = df_prov.sort_values("count", ascending=True).tail(20)
+            colors_p  = [get_sev_color(s) for s in df_prov_s["avg_risk"]]
 
             fig_prov = go.Figure(go.Bar(
-                x=df_prov_s["incident_count"], y=df_prov_s["province"],
+                x=df_prov_s["count"], y=df_prov_s["province"],
                 orientation="h", marker_color=colors_p,
                 text=[f"{c} ({s:.0f})" for c,s in
-                      zip(df_prov_s["incident_count"],
-                          df_prov_s["avg_severity"])],
+                      zip(df_prov_s["count"],
+                          df_prov_s["avg_risk"])],
                 textfont=dict(size=10), textposition="outside",
             ))
             _pt = {**PLOT_THEME,
@@ -220,13 +220,12 @@ def render_geo_intel(monitor_id: int, monitor_kw: str):
                         "province": row["province"],
                         "lat":      coord["lat"],
                         "lon":      coord["lon"],
-                        "count":    row["incident_count"],
-                        "avg_sev":  row["avg_severity"],
+                        "count":    row["count"],
+                        "avg_sev":  row["avg_risk"],
                     })
 
             if prov_coords:
-                import pandas as pd_inner
-                df_bc = pd_inner.DataFrame(prov_coords)
+                df_bc = pd.DataFrame(prov_coords)
                 fig_bc = go.Figure(go.Scattermap(
                     lat=df_bc["lat"], lon=df_bc["lon"],
                     mode="markers+text",
@@ -255,14 +254,12 @@ def render_geo_intel(monitor_id: int, monitor_kw: str):
 
             # Tabel
             df_prov_d = df_prov.copy()
-            df_prov_d["Level"] = df_prov_d["avg_severity"].apply(_get_sev_label)
-            df_prov_d["Tipe"]  = df_prov_d["dominant_type"].apply(
-                lambda x: INCIDENT_TYPES.get(x,{}).get("label",x)
-            )
+            df_prov_d["Level"] = df_prov_d["avg_risk"].apply(_get_sev_label)
+            df_prov_d["Tipe"]  = "—"  # dominant_type tidak tersimpan di province_stats
             st.dataframe(
-                df_prov_d[["province","incident_count","avg_severity","Level","Tipe"]]
-                .rename(columns={"province":"Provinsi","incident_count":"Insiden",
-                                 "avg_severity":"Avg Severity"})
+                df_prov_d[["province","count","avg_risk","Level"]]
+                .rename(columns={"province":"Provinsi","count":"Insiden",
+                                 "avg_risk":"Avg Severity"})
                 .sort_values("Insiden", ascending=False),
                 use_container_width=True, hide_index=True,
             )

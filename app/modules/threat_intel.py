@@ -55,7 +55,7 @@ def _hex_rgb(h):
 def render_threat_intel(monitor_id: int, monitor_kw: str):
     st.markdown(BASE_CSS + module_css("threat"), unsafe_allow_html=True)
     render_header("threat", monitor_kw,
-                  unread_alerts=get_global_stats().get("alerts", 0))
+                  unread_alerts=get_global_stats().get("unread_alerts", 0))
 
     if not monitor_id:
         st.info("👈 Tambah keyword di sidebar untuk mulai analisis.")
@@ -63,7 +63,7 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
 
     df_art  = load_articles(monitor_id)
     df_narr = load_narratives(monitor_id)
-    df_alrt = load_alerts(monitor_id)
+    df_alrt = load_alerts()
 
     if df_art.empty:
         st.warning("Belum ada data. Coba update di sidebar.")
@@ -315,11 +315,13 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
                 ),
                 hovertemplate="Hoax: %{x:.1f}<br>Hate: %{y:.1f}<extra></extra>",
             ))
-            _pt = {k:v for k,v in PLOT_THEME.items()}
-            _pt["plot_bgcolor"] = "#080202"
-            _pt["paper_bgcolor"]= "#0d0505"
-            _pt["xaxis"]["gridcolor"] = "#3d1515"
-            _pt["yaxis"]["gridcolor"] = "#3d1515"
+            _pt = {**PLOT_THEME,
+                   "plot_bgcolor":  "#080202",
+                   "paper_bgcolor": "#0d0505",
+                   "xaxis": dict(showgrid=True, gridcolor="#3d1515",
+                                 tickfont=dict(color="rgba(255,255,255,0.4)")),
+                   "yaxis": dict(showgrid=True, gridcolor="#3d1515",
+                                 tickfont=dict(color="rgba(255,255,255,0.4)"))}
             fig_sc.update_layout(**_pt, height=280,
                 title=dict(text="Hoax vs Hate Speech Score",
                            font=dict(size=12, color="rgba(255,255,255,0.5)"), x=0))

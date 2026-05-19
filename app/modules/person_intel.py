@@ -31,7 +31,7 @@ def _hex_rgb(h):
 def render_person_intel(monitor_id: int, monitor_kw: str):
     st.markdown(BASE_CSS + module_css("person"), unsafe_allow_html=True)
     render_header("person", monitor_kw,
-                  unread_alerts=get_global_stats().get("alerts",0))
+                  unread_alerts=get_global_stats().get("unread_alerts", 0))
 
     if not monitor_id:
         st.info("👈 Tambah keyword di sidebar untuk mulai analisis.")
