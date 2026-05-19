@@ -35,25 +35,17 @@ PLOT_THEME = {
     "paper_bgcolor": "#070d14",
     "plot_bgcolor":  "#070d14",
     "font":          {"family": "DM Mono, monospace", "color": "rgba(255,255,255,.7)", "size": 11},
-    "margin":        {"l": 40, "r": 20, "t": 40, "b": 40},
-    "xaxis": {
-        "gridcolor":     "rgba(255,255,255,.05)",
-        "linecolor":     "rgba(255,255,255,.1)",
-        "tickfont":      {"size": 10},
-        "showgrid":      True,
-    },
-    "yaxis": {
-        "gridcolor":     "rgba(255,255,255,.05)",
-        "linecolor":     "rgba(255,255,255,.1)",
-        "tickfont":      {"size": 10},
-        "showgrid":      True,
-    },
-    "legend": {
-        "bgcolor":       "rgba(0,0,0,0)",
-        "font":          {"size": 10},
-    },
-    "colorway": ["#4FC3F7","#E74C3C","#2ECC71","#F39C12","#9B59B6","#1ABC9C"],
 }
+# Gunakan PLOT_AXIS jika perlu default axis/legend/margin
+PLOT_AXIS = {
+    "gridcolor": "rgba(255,255,255,.05)",
+    "linecolor":  "rgba(255,255,255,.1)",
+    "tickfont":   {"size": 10},
+    "showgrid":   True,
+}
+PLOT_LEGEND = {"bgcolor": "rgba(0,0,0,0)", "font": {"size": 10}}
+PLOT_MARGIN = {"l": 40, "r": 20, "t": 40, "b": 40}
+PLOT_COLORWAY = ["#4FC3F7","#E74C3C","#2ECC71","#F39C12","#9B59B6","#1ABC9C"]
 
 # ── Threat categories ─────────────────────────────────────────────────────────
 THREAT_CATEGORIES = {
