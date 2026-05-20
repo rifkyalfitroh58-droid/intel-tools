@@ -331,8 +331,8 @@ def render_geo_intel(monitor_id: int, monitor_kw: str):
         st.markdown('<div class="sec-title geo">&#9661; INSIDEN TERBARU</div>',
                     unsafe_allow_html=True)
         df_show = df_geo.head(8) if not df_geo.empty else df_art.head(6)
-        for _, row in df_show.iterrows():
-            render_article_card(row.to_dict(), "geo")
+        for _idx, (_, row) in enumerate(df_show.iterrows()):
+            render_article_card(row.to_dict(), "geo", idx=_idx)
 
         if st.session_state.get("show_panel") and st.session_state.get("panel_article_id"):
             render_link_panel(st.session_state["panel_article_id"])

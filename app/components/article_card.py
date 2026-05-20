@@ -19,7 +19,8 @@ def _hex_rgb(h: str) -> str:
 
 def render_article_card(row: dict, current_module: str,
                         show_badges: bool = True,
-                        show_scores: bool = True):
+                        show_scores: bool = True,
+                        idx: int = 0):
     """
     Render satu kartu artikel lengkap dengan:
     - Badge modul terhubung (klik → pindah modul)
@@ -105,7 +106,7 @@ def render_article_card(row: dict, current_module: str,
         col_nav, col_panel = st.columns([3, 1])
         with col_panel:
             if st.button(f"🔗 Lihat keterhubungan",
-                         key=f"panel_{article_id}_{current_module}"):
+                         key=f"panel_{article_id}_{current_module}_{idx}"):
                 st.session_state["panel_article_id"] = article_id
                 st.session_state["show_panel"]       = True
 
@@ -117,7 +118,7 @@ def render_article_card(row: dict, current_module: str,
                 label = MODULE_LABELS.get(mod, mod)
                 icon  = MODULE_ICONS.get(mod,"")
                 if st.button(f"{icon} Buka di {label} →",
-                             key=f"goto_{article_id}_{mod}_{current_module}"):
+                             key=f"goto_{article_id}_{mod}_{current_module}_{idx}"):
                     st.session_state["page"]            = mod
                     st.session_state["highlight_url"]   = row.get("url","")
                     st.session_state["from_module"]      = current_module
@@ -193,7 +194,7 @@ def render_link_panel(article_id: int):
 
             # Tombol navigasi ke modul
             if st.button(f"Buka semua di {label} →",
-                         key=f"open_mod_{mod}_{article_id}"):
+                         key=f"open_mod_{mod}_{article_id}_{idx}"):
                 st.session_state["page"] = mod
                 st.session_state["from_module"] = article.get("module","")
                 st.rerun()

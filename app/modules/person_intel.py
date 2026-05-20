@@ -161,8 +161,8 @@ def render_person_intel(monitor_id: int, monitor_kw: str):
         # Artikel terbaru dengan badge
         st.markdown('<div class="sec-title person">&#9661; ARTIKEL TERBARU</div>',
                     unsafe_allow_html=True)
-        for _, row in df_art.head(6).iterrows():
-            render_article_card(row.to_dict(), "person")
+        for _idx, (_, row) in enumerate(df_art.head(6).iterrows()):
+            render_article_card(row.to_dict(), "person", idx=_idx)
 
         # Panel keterhubungan
         if st.session_state.get("show_panel") and st.session_state.get("panel_article_id"):

@@ -170,8 +170,8 @@ def render_media_intel(monitor_id: int, monitor_kw: str):
         # Artikel terbaru
         st.markdown('<div class="sec-title media">&#9661; ARTIKEL TERBARU</div>',
                     unsafe_allow_html=True)
-        for _, row in df_art.head(6).iterrows():
-            render_article_card(row.to_dict(), "media")
+        for _idx, (_, row) in enumerate(df_art.head(6).iterrows()):
+            render_article_card(row.to_dict(), "media", idx=_idx)
 
         if st.session_state.get("show_panel") and st.session_state.get("panel_article_id"):
             render_link_panel(st.session_state["panel_article_id"])
@@ -233,8 +233,8 @@ def render_media_intel(monitor_id: int, monitor_kw: str):
             if df_narr_arts.empty:
                 st.info("Tidak ada artikel yang cocok dengan narasi ini.")
             else:
-                for _, row in df_narr_arts.iterrows():
-                    render_article_card(row.to_dict(), "media")
+                for _idx, (_, row) in enumerate(df_narr_arts.iterrows()):
+                    render_article_card(row.to_dict(), "media", idx=_idx)
 
     # ── TAB 3: VELOCITY ───────────────────────────────────────────────────────
     with tab3:
