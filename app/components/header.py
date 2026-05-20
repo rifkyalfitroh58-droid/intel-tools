@@ -34,7 +34,6 @@ def render_header(module: str, keyword: str = "", unread_alerts: int = 0):
     accent   = theme["accent"]
     border   = theme["border"]
     bg_parts = theme["bg"].split(",")
-    bg_grad  = f"#{'}, #'.join(bg_parts)}"
 
     now_str  = datetime.now().strftime("%d %b %Y %H:%M")
     icon     = MODULE_ICONS.get(module, "◈")
@@ -64,8 +63,9 @@ def render_header(module: str, keyword: str = "", unread_alerts: int = 0):
             {icon} {title}
         </div>"""
 
+    bg3 = bg_parts[2] if len(bg_parts) > 2 else bg_parts[1]
     st.markdown(f"""
-    <div style="background:linear-gradient(135deg,#{bg_parts[0]} 0%,#{bg_parts[1]} 50%,#{bg_parts[2] if len(bg_parts)>2 else bg_parts[1]} 100%);
+    <div style="background:linear-gradient(135deg,#{bg_parts[0]} 0%,#{bg_parts[1]} 50%,#{bg3} 100%);
                 border:1px solid {border};border-radius:12px;
                 padding:1.2rem 2rem;margin-bottom:1rem;position:relative;overflow:hidden">
         <div style="position:absolute;top:0;left:0;right:0;bottom:0;

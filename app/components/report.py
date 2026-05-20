@@ -349,7 +349,7 @@ def render_report():
                 f"   Avg Threat: {avg_t:.1f}/100\n"
                 f"   Tinggi    : {n_high}\n"
                 f"   Sumber    : {n_src}\n"
-                f"   Keyword   : {', '.join(top_kw) if top_kw else 'N/A'}"
+                "   Keyword   : " + (', '.join(top_kw) if top_kw else 'N/A')
             )
 
         report = f"""
