@@ -194,7 +194,7 @@ def render_link_panel(article_id: int):
 
             # Tombol navigasi ke modul
             if st.button(f"Buka semua di {label} →",
-                         key=f"open_mod_{mod}_{article_id}_{idx}"):
+                         key=f"open_mod_{mod}_{article_id}"):
                 st.session_state["page"] = mod
                 st.session_state["from_module"] = article.get("module","")
                 st.rerun()
