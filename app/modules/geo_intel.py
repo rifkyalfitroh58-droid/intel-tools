@@ -341,7 +341,7 @@ def render_geo_intel(monitor_id: int, monitor_kw: str):
     with tab4:
         now_rpt  = datetime.now().strftime("%d %B %Y %H:%M")
         top3_inc = df_geo.nlargest(3,"severity") if not df_geo.empty else df_art.head(3)
-        top5_prov= df_prov.nlargest(5,"incident_count") if not df_prov.empty else pd.DataFrame()
+        top5_prov= df_prov.nlargest(5,"count") if not df_prov.empty else pd.DataFrame()
         type_bd  = df_geo["inc_type"].value_counts() if not df_geo.empty else pd.Series()
         type_lines = "\n".join(
             f"   {INCIDENT_TYPES.get(k,{}).get('label',k):<25}: {v}"
@@ -349,7 +349,7 @@ def render_geo_intel(monitor_id: int, monitor_kw: str):
         ) if not type_bd.empty else "   Tidak ada data"
 
         prov_lines = "\n".join(
-            f"   {i+1}. {row['province']:<30}: {row['incident_count']} insiden"
+            f"   {i+1}. {row['province']:<30}: {row['count']} insiden"
             for i,(_,row) in enumerate(top5_prov.iterrows())
         ) if not top5_prov.empty else "   Tidak ada data"
 
