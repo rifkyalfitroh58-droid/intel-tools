@@ -199,7 +199,7 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
                             unsafe_allow_html=True)
             else:
                 for _idx, (_, row) in enumerate(high_arts.iterrows()):
-                    render_article_card(row.to_dict(), "threat", idx=_idx)
+                    render_article_card(row.to_dict(), "threat", idx=1000 + _idx)
 
         if st.session_state.get("show_panel") and st.session_state.get("panel_article_id"):
             st.markdown('<div class="sec-title neutral">&#9661; PANEL KETERHUBUNGAN</div>',
@@ -292,7 +292,7 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
             unsafe_allow_html=True
         )
         for _idx, (_, row) in enumerate(df_feed.head(30).iterrows()):
-            render_article_card(row.to_dict(), "threat", idx=_idx)
+            render_article_card(row.to_dict(), "threat", idx=2000 + _idx)
 
         if st.session_state.get("show_panel") and st.session_state.get("panel_article_id"):
             render_link_panel(st.session_state["panel_article_id"])
