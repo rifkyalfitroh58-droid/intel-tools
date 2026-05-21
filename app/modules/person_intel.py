@@ -88,10 +88,11 @@ def render_person_intel(monitor_id: int, monitor_kw: str):
             rc = get_risk_color(risk_sc)
             fig_g = go.Figure(go.Indicator(
                 mode="gauge+number", value=risk_sc,
+                domain=dict(x=[0,1], y=[0.1, 1]),
                 gauge=dict(
                     axis=dict(range=[0,100],
                               tickfont=dict(color="rgba(255,255,255,0.3)", size=9)),
-                    bar=dict(color=rc, thickness=0.3),
+                    bar=dict(color=rc, thickness=0.25),
                     bgcolor="#0A0F1E", bordercolor="#1E3A5F",
                     steps=[
                         dict(range=[0,40],   color="rgba(46,204,113,0.06)"),
@@ -99,13 +100,14 @@ def render_person_intel(monitor_id: int, monitor_kw: str):
                         dict(range=[70,100], color="rgba(231,76,60,0.08)"),
                     ],
                 ),
-                number=dict(font=dict(color=rc, size=34, family="DM Mono"),
+                number=dict(font=dict(color=rc, size=28, family="DM Mono"),
                             suffix="/100"),
                 title=dict(text=get_risk_label(risk_sc),
                            font=dict(color=rc, size=12, family="DM Mono")),
             ))
             _plot = {k:v for k,v in PLOT_THEME.items() if k not in ["xaxis","yaxis"]}
-            fig_g.update_layout(**_plot, height=260)
+            fig_g.update_layout(**_plot, height=280,
+                margin=dict(l=20, r=20, t=40, b=60))
             st.plotly_chart(fig_g, use_container_width=True)
 
             for lbl2, score2, mx2 in [
