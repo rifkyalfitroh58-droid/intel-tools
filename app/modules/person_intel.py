@@ -173,7 +173,7 @@ def render_person_intel(monitor_id: int, monitor_kw: str):
         if st.session_state.get("show_panel") and st.session_state.get("panel_article_id"):
             st.markdown('<div class="sec-title neutral">&#9661; PANEL KETERHUBUNGAN</div>',
                         unsafe_allow_html=True)
-            render_link_panel(st.session_state["panel_article_id"])
+            render_link_panel(st.session_state["panel_article_id"], "t1")
 
         # Tombol lanjut
         st.markdown("<br>", unsafe_allow_html=True)

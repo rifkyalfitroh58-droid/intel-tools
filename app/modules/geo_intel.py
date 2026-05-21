@@ -333,7 +333,7 @@ def render_geo_intel(monitor_id: int, monitor_kw: str):
             render_article_card(row.to_dict(), "geo", idx=_idx)
 
         if st.session_state.get("show_panel") and st.session_state.get("panel_article_id"):
-            render_link_panel(st.session_state["panel_article_id"])
+            render_link_panel(st.session_state["panel_article_id"], "t3")
 
     # ── TAB 4: LAPORAN ────────────────────────────────────────────────────────
     with tab4:

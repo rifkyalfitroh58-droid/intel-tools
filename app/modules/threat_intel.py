@@ -300,7 +300,7 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
             render_article_card(row.to_dict(), "threat", idx=2000 + _idx)
 
         if st.session_state.get("show_panel") and st.session_state.get("panel_article_id"):
-            render_link_panel(st.session_state["panel_article_id"])
+            render_link_panel(st.session_state["panel_article_id"], "t2")
 
     # ── TAB 3: ANALISIS ───────────────────────────────────────────────────────
     with tab3:

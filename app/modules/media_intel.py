@@ -178,7 +178,7 @@ def render_media_intel(monitor_id: int, monitor_kw: str):
             render_article_card(row.to_dict(), "media", idx=int(str(1000 + _idx)))
 
         if st.session_state.get("show_panel") and st.session_state.get("panel_article_id"):
-            render_link_panel(st.session_state["panel_article_id"])
+            render_link_panel(st.session_state["panel_article_id"], "t1")
 
         # Tombol navigasi
         st.markdown("<br>", unsafe_allow_html=True)

@@ -118,7 +118,7 @@ def render_article_card(row: dict, current_module: str,
                     st.rerun()
 
 
-def render_link_panel(article_id: int):
+def render_link_panel(article_id: int, panel_key: str = ""):
     data = get_panel_data(article_id)
     if not data.get("links_by_module"):
         st.info("Artikel ini belum terhubung ke modul lain.")
@@ -184,7 +184,7 @@ def render_link_panel(article_id: int):
                 )
 
             if st.button("Buka semua di " + label + " →",
-                         key="open_mod_" + mod + "_" + str(article_id)):
+                         key="open_mod_" + mod + "_" + str(article_id) + "_" + panel_key):
                 st.session_state["page"]        = mod
                 st.session_state["from_module"] = article.get("module", "")
                 st.rerun()
