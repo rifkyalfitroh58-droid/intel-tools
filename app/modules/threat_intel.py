@@ -85,18 +85,20 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
     with tab1:
         c1,c2,c3,c4,c5 = st.columns(5)
         for col, val, lbl, color in [
-            (c1, str(n),       "TOTAL KONTEN",   "#4FC3F7"),
-            (c2, str(n_high),  "ANCAMAN TINGGI", "#E74C3C"),
-            (c3, str(n_hoax),  "HOAKS",          "#E67E22"),
-            (c4, str(n_hate),  "HATE SPEECH",    "#F39C12"),
-            (c5, f"{avg_thr:.0f}", "AVG THREAT", get_threat_color(avg_thr)),
+            (c1, str(n),            "TOTAL",    "#4FC3F7"),
+            (c2, str(n_high),       "TINGGI",   "#E74C3C"),
+            (c3, str(n_hoax),       "HOAKS",    "#E67E22"),
+            (c4, str(n_hate),       "HATE",     "#F39C12"),
+            (c5, str(int(avg_thr)), "AVG THR",  get_threat_color(avg_thr)),
         ]:
             with col:
-                st.markdown(f"""
-                <div class="suite-card threat">
-                    <div class="metric-num" style="color:{color}">{val}</div>
-                    <div class="metric-label">{lbl}</div>
-                </div>""", unsafe_allow_html=True)
+                st.markdown(
+                    '<div class="suite-card threat">'
+                    '<div class="metric-num" style="color:' + color + '">' + val + '</div>'
+                    '<div class="metric-label">' + lbl + '</div>'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
 
         st.markdown('<hr style="border-color:#3d1515;margin:.8rem 0">',
                     unsafe_allow_html=True)
@@ -128,24 +130,25 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
             _plot = {k:v for k,v in PLOT_THEME.items() if k not in ["xaxis","yaxis"]}
             _plot["plot_bgcolor"] = "#080202"
             _plot["paper_bgcolor"]= "#0d0505"
-            fig_g.update_layout(**_plot, height=220)
+            fig_g.update_layout(**_plot, height=240)
             st.plotly_chart(fig_g, use_container_width=True)
 
-            for lbl2, val2, mx2, c2 in [
-                ("Hoax",      float(df_art["hoax_score"].mean()),   100, "#E74C3C"),
-                ("Hate",      float(df_art["hate_score"].mean()),   100, "#E67E22"),
-                ("Provokasi", float(df_art["provok_score"].mean()), 100, "#F39C12"),
+            for lbl2, val2, clr2 in [
+                ("Hoax",      float(df_art["hoax_score"].mean()),   "#E74C3C"),
+                ("Hate",      float(df_art["hate_score"].mean()),   "#E67E22"),
+                ("Provokasi", float(df_art["provok_score"].mean()), "#F39C12"),
             ]:
-                pct = val2/mx2*100
-                st.markdown(f"""
-                <div style="font-family:'DM Mono',monospace;font-size:.68rem;
-                            color:rgba(255,255,255,.5);margin-bottom:6px">
-                    {lbl2:<12} {val2:5.1f}/100
-                    <div style="background:#3d1515;border-radius:3px;height:4px;margin-top:2px">
-                        <div style="background:{c2};height:4px;border-radius:3px;
-                                    width:{pct:.1f}%"></div>
-                    </div>
-                </div>""", unsafe_allow_html=True)
+                pct2 = str(round(val2, 1))
+                st.markdown(
+                    '<div style="font-family:DM Mono,monospace;font-size:.68rem;'
+                    'color:rgba(255,255,255,.5);margin-bottom:6px">'
+                    + lbl2 +
+                    '<span style="float:right;color:rgba(255,255,255,.3)">' + pct2 + '/100</span>'
+                    '<div style="background:#3d1515;border-radius:3px;height:4px;margin-top:4px;clear:both">'
+                    '<div style="background:' + clr2 + ';height:4px;border-radius:3px;width:' + pct2 + '%"></div>'
+                    '</div></div>',
+                    unsafe_allow_html=True
+                )
 
         with col_d:
             st.markdown('<div class="sec-title threat">&#9661; DISTRIBUSI</div>',
@@ -178,17 +181,17 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
                       "#2ECC71" if spread["trend"]=="falling" else "#F39C12"
             trend_i = "↑" if spread["trend"]=="rising" else \
                       "↓" if spread["trend"]=="falling" else "→"
-            st.markdown(f"""
-            <div style="background:#0d0505;border:1px solid #3d1515;
-                        border-radius:8px;padding:.6rem .9rem">
-                <div style="font-family:'DM Mono',monospace;font-size:.62rem;
-                            color:rgba(231,76,60,.4);margin-bottom:4px">SPREAD</div>
-                <div style="font-family:'DM Mono',monospace;font-size:1.2rem;
-                            color:{trend_c}">{trend_i} {spread['score']:.0f}/100</div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.3);margin-top:2px">
-                    Peak: {spread['peak_hour']}
-                </div>
-            </div>""", unsafe_allow_html=True)
+            st.markdown(
+                '<div style="background:#0d0505;border:1px solid #3d1515;'
+                'border-radius:8px;padding:.6rem .9rem">'
+                '<div style="font-family:DM Mono,monospace;font-size:.62rem;'
+                'color:rgba(231,76,60,.4);margin-bottom:4px">SPREAD</div>'
+                '<div style="font-family:DM Mono,monospace;font-size:1.2rem;'
+                'color:' + trend_c + '">' + trend_i + ' ' + str(int(spread["score"])) + '/100</div>'
+                '<div style="font-size:.7rem;color:rgba(255,255,255,.3);margin-top:2px">'
+                'Peak: ' + spread["peak_hour"] + '</div></div>',
+                unsafe_allow_html=True
+            )
 
         with col_f:
             st.markdown('<div class="sec-title threat">&#9661; KONTEN ANCAMAN TERBARU</div>',
@@ -368,15 +371,17 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
                         for kw in kws[:5]
                     ])
                     with col:
-                        st.markdown(f"""
-                        <div class="intel-box" style="border-color:rgba({rgb},.3)">
-                            <div style="font-family:'DM Mono',monospace;font-size:.65rem;
-                                        color:rgba(255,255,255,.3)">NARASI {row['id']:02d}
-                                · {row['count']} konten</div>
-                            <div style="color:{color};font-weight:500;margin:4px 0">
-                                {row['label']}</div>
-                            <div>{tags}</div>
-                        </div>""", unsafe_allow_html=True)
+                        st.markdown(
+                            '<div class="intel-box" style="border-color:rgba(' + rgb + ',.3)">'
+                            '<div style="font-family:DM Mono,monospace;font-size:.65rem;'
+                            'color:rgba(255,255,255,.3)">NARASI ' + str(row["id"]).zfill(2) +
+                            ' · ' + str(row["count"]) + ' konten</div>'
+                            '<div style="color:' + color + ';font-weight:500;margin:4px 0">'
+                            + str(row["label"]) + '</div>'
+                            '<div>' + tags + '</div>'
+                            '</div>',
+                            unsafe_allow_html=True
+                        )
         else:
             st.info("Belum ada klaster narasi.")
 
@@ -385,17 +390,20 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
         c1,c2,c3 = st.columns(3)
         trend_c = "#E74C3C" if spread["trend"]=="rising" else \
                   "#2ECC71" if spread["trend"]=="falling" else "#F39C12"
+        trend_label = {"rising":"\u2191 NAIK","falling":"\u2193 TURUN","stable":"\u2192 STABIL"}.get(spread["trend"],"\u2192")
         for col, val, lbl in [
-            (c1, f"{spread['score']:.0f}", "SPREAD SCORE"),
-            (c2, f"{spread['velocity']:.1f}", "ARTIKEL/JAM"),
-            (c3, {"rising":"↑ NAIK","falling":"↓ TURUN","stable":"→ STABIL"}.get(spread["trend"],"→"), "TREN"),
+            (c1, str(int(spread["score"])),    "SPREAD"),
+            (c2, str(spread["velocity"]),      "ART/JAM"),
+            (c3, trend_label,                  "TREN"),
         ]:
             with col:
-                st.markdown(f"""
-                <div class="suite-card threat">
-                    <div class="metric-num" style="color:{trend_c}">{val}</div>
-                    <div class="metric-label">{lbl}</div>
-                </div>""", unsafe_allow_html=True)
+                st.markdown(
+                    '<div class="suite-card threat">'
+                    '<div class="metric-num" style="color:' + trend_c + '">' + val + '</div>'
+                    '<div class="metric-label">' + lbl + '</div>'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
 
         # Alert history
         st.markdown('<div class="sec-title threat">&#9661; RIWAYAT ALERT</div>',
@@ -410,22 +418,23 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
                 cat  = THREAT_CATEGORIES.get(row["alert_type"],{})
                 crat = row["created_at"].strftime("%d %b %H:%M") \
                        if pd.notna(row["created_at"]) else ""
-                st.markdown(f"""
-                <div style="display:flex;align-items:flex-start;gap:10px;
-                            background:#0d0505;border:1px solid #3d1515;
-                            border-radius:8px;padding:.6rem .9rem;margin-bottom:6px">
-                    <div style="width:8px;height:8px;border-radius:50%;
-                                background:{color};flex-shrink:0;margin-top:4px"></div>
-                    <div>
-                        <div style="font-size:.82rem;color:rgba(255,255,255,.8)">
-                            {row['message']}</div>
-                        <div style="font-family:'DM Mono',monospace;font-size:.68rem;
-                                    color:rgba(255,255,255,.35);margin-top:2px">
-                            {crat} · {cat.get('label',row['alert_type'])} ·
-                            <span style="color:{color}">THREAT:{sc:.0f}</span>
-                        </div>
-                    </div>
-                </div>""", unsafe_allow_html=True)
+                cat_label = cat.get("label", row["alert_type"])
+                st.markdown(
+                    '<div style="display:flex;align-items:flex-start;gap:10px;'
+                    'background:#0d0505;border:1px solid #3d1515;'
+                    'border-radius:8px;padding:.6rem .9rem;margin-bottom:6px">'
+                    '<div style="width:8px;height:8px;border-radius:50%;'
+                    'background:' + color + ';flex-shrink:0;margin-top:4px"></div>'
+                    '<div>'
+                    '<div style="font-size:.82rem;color:rgba(255,255,255,.8)">'
+                    + str(row["message"]) + '</div>'
+                    '<div style="font-family:DM Mono,monospace;font-size:.68rem;'
+                    'color:rgba(255,255,255,.35);margin-top:2px">'
+                    + crat + ' · ' + cat_label + ' · '
+                    '<span style="color:' + color + '">THREAT:' + str(int(sc)) + '</span>'
+                    '</div></div></div>',
+                    unsafe_allow_html=True
+                )
             if st.button("✓ Tandai semua sudah dibaca",
                          key="mark_read_threat"):
                 mark_alerts_read()

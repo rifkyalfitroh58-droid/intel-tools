@@ -86,11 +86,12 @@ def render_sidebar(current_module: str):
             icon   = MODULE_ICONS.get(current_module, "◈")
             label  = MODULE_LABELS.get(current_module, "")
 
+            rgb_c = _hex_rgb(color)
             st.markdown(
-                f'<div style="font-family:DM Mono;font-size:.62rem;'
-                f'color:rgba({_hex_rgb(color)},.5);letter-spacing:.1em;'
-                f'text-transform:uppercase;margin-bottom:6px">'
-                f'{icon} {label.upper()}</div>',
+                '<div style="font-family:DM Mono;font-size:.62rem;'
+                'color:rgba(' + rgb_c + ',.5);letter-spacing:.1em;'
+                'text-transform:uppercase;margin-bottom:6px">'
+                + icon + ' ' + label.upper() + '</div>',
                 unsafe_allow_html=True
             )
 
@@ -182,25 +183,36 @@ def render_sidebar(current_module: str):
         unread = count_unread_alerts()
         mod_s  = stats.get("modules",{})
 
-        st.markdown(f"""
-        <div style="font-family:'DM Mono',monospace;font-size:.62rem;
-                    color:rgba(155,89,182,.5);letter-spacing:.1em;
-                    text-transform:uppercase;margin-bottom:8px">STATS GLOBAL</div>
-        <div style="background:#070d14;border:1px solid #1E3A5F;
-                    border-radius:8px;padding:.7rem .9rem">
-            <div style="font-family:'DM Mono',monospace;font-size:.7rem;
-                        color:rgba(255,255,255,.4);line-height:2.1">
-                ARTIKEL &nbsp;&nbsp;: {stats.get('total',0)}<br>
-                LINKS &nbsp;&nbsp;&nbsp;&nbsp;: {stats.get('links',0)}<br>
-                MONITOR &nbsp;&nbsp;: {stats.get('monitors',0)}<br>
-                ALERT &nbsp;&nbsp;&nbsp;&nbsp;: <span style="color:#E74C3C">{unread}</span><br>
-                <span style="color:#4FC3F7">A</span> {mod_s.get('person',0)} &nbsp;
-                <span style="color:#E74C3C">B</span> {mod_s.get('threat',0)} &nbsp;
-                <span style="color:#2ECC71">C</span> {mod_s.get('geo',0)} &nbsp;
-                <span style="color:#F39C12">D</span> {mod_s.get('media',0)}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        _t = str(stats.get("total",0))
+        _l = str(stats.get("links",0))
+        _m = str(stats.get("monitors",0))
+        _u = str(unread)
+        _a = str(mod_s.get("person",0))
+        _b = str(mod_s.get("threat",0))
+        _c = str(mod_s.get("geo",0))
+        _d = str(mod_s.get("media",0))
+        st.markdown(
+            '<div style="font-family:DM Mono,monospace;font-size:.62rem;'
+            'color:rgba(155,89,182,.5);letter-spacing:.1em;'
+            'text-transform:uppercase;margin-bottom:8px">STATS GLOBAL</div>'
+            '<div style="background:#070d14;border:1px solid #1E3A5F;'
+            'border-radius:8px;padding:.7rem .9rem">'
+            '<table style="font-family:DM Mono,monospace;font-size:.68rem;'
+            'color:rgba(255,255,255,.4);width:100%;border-collapse:collapse;line-height:1.9">'
+            '<tr><td>ARTIKEL</td><td style="text-align:right">' + _t + '</td></tr>'
+            '<tr><td>LINKS</td><td style="text-align:right">' + _l + '</td></tr>'
+            '<tr><td>MONITOR</td><td style="text-align:right">' + _m + '</td></tr>'
+            '<tr><td>ALERT</td><td style="text-align:right">'
+            '<span style="color:#E74C3C">' + _u + '</span></td></tr>'
+            '<tr><td colspan="2" style="padding-top:4px">'
+            '<span style="color:#4FC3F7">A</span> ' + _a + '&nbsp;'
+            '<span style="color:#E74C3C">B</span> ' + _b + '&nbsp;'
+            '<span style="color:#2ECC71">C</span> ' + _c + '&nbsp;'
+            '<span style="color:#F39C12">D</span> ' + _d
+            + '</td></tr>'
+            '</table></div>',
+            unsafe_allow_html=True
+        )
 
         st.divider()
         st.markdown("""

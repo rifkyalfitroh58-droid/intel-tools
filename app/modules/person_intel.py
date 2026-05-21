@@ -64,19 +64,20 @@ def render_person_intel(monitor_id: int, monitor_kw: str):
     with tab1:
         c1,c2,c3,c4,c5 = st.columns(5)
         for col, val, lbl, color in [
-            (c1, str(n),        "TOTAL ARTIKEL",  "#4FC3F7"),
-            (c2, str(n_src),    "SUMBER UNIK",    "#4FC3F7"),
-            (c3, str(n_ent),    "ENTITAS",         "#9B59B6"),
-            (c4, f"{risk_sc:.0f}", "RISK SCORE",  get_risk_color(risk_sc)),
-            (c5, f"{avg_s:.3f}", "AVG SENTIMEN",  "#2ECC71" if avg_s > 0 else "#E74C3C"),
+            (c1, str(n),              "ARTIKEL",    "#4FC3F7"),
+            (c2, str(n_src),          "SUMBER",     "#4FC3F7"),
+            (c3, str(n_ent),          "ENTITAS",    "#9B59B6"),
+            (c4, str(int(risk_sc)),   "RISK SCORE", get_risk_color(risk_sc)),
+            (c5, str(round(avg_s,3)), "SENTIMEN",   "#2ECC71" if avg_s > 0 else "#E74C3C"),
         ]:
             with col:
-                rgb = _hex_rgb(color)
-                st.markdown(f"""
-                <div class="suite-card person">
-                    <div class="metric-num" style="color:{color}">{val}</div>
-                    <div class="metric-label">{lbl}</div>
-                </div>""", unsafe_allow_html=True)
+                st.markdown(
+                    '<div class="suite-card person">'
+                    '<div class="metric-num" style="color:' + color + '">' + val + '</div>'
+                    '<div class="metric-label">' + lbl + '</div>'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
 
         st.markdown('<hr style="border-color:#1E3A5F;margin:.8rem 0">', unsafe_allow_html=True)
         col_g, col_t = st.columns([1,2])
@@ -104,7 +105,7 @@ def render_person_intel(monitor_id: int, monitor_kw: str):
                            font=dict(color=rc, size=12, family="DM Mono")),
             ))
             _plot = {k:v for k,v in PLOT_THEME.items() if k not in ["xaxis","yaxis"]}
-            fig_g.update_layout(**_plot, height=220)
+            fig_g.update_layout(**_plot, height=260)
             st.plotly_chart(fig_g, use_container_width=True)
 
             for lbl2, score2, mx2 in [
@@ -113,16 +114,18 @@ def render_person_intel(monitor_id: int, monitor_kw: str):
                 ("Keragaman", rs["keragaman"], 20),
                 ("Sensitif",  rs["sensitif"],  25),
             ]:
-                pct = score2 / mx2 * 100 if mx2 > 0 else 0
-                st.markdown(f"""
-                <div style="font-family:'DM Mono',monospace;font-size:.68rem;
-                            color:rgba(255,255,255,.5);margin-bottom:6px">
-                    {lbl2:<12} {score2:5.1f}/{mx2}
-                    <div style="background:#1E3A5F;border-radius:3px;height:4px;margin-top:2px">
-                        <div style="background:{rc};height:4px;border-radius:3px;
-                                    width:{pct:.1f}%"></div>
-                    </div>
-                </div>""", unsafe_allow_html=True)
+                pct = str(round(score2 / mx2 * 100 if mx2 > 0 else 0, 1))
+                st.markdown(
+                    '<div style="font-family:DM Mono,monospace;font-size:.68rem;'
+                    'color:rgba(255,255,255,.5);margin-bottom:6px">'
+                    + lbl2 + ' '
+                    '<span style="float:right;color:rgba(255,255,255,.3)">'
+                    + str(round(score2,1)) + "/" + str(mx2) + '</span>'
+                    '<div style="background:#1E3A5F;border-radius:3px;height:4px;margin-top:4px;clear:both">'
+                    '<div style="background:' + rc + ';height:4px;border-radius:3px;width:' + pct + '%"></div>'
+                    '</div></div>',
+                    unsafe_allow_html=True
+                )
 
         with col_t:
             st.markdown('<div class="sec-title person">&#9661; TIMELINE PEMBERITAAN</div>',

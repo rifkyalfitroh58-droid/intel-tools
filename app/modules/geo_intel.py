@@ -75,18 +75,20 @@ def render_geo_intel(monitor_id: int, monitor_kw: str):
     with tab1:
         c1,c2,c3,c4,c5 = st.columns(5)
         for col, val, lbl, color in [
-            (c1, str(n),       "TOTAL ARTIKEL",   "#4FC3F7"),
-            (c2, str(n_geo),   "ARTIKEL TERPETAKAN","#2ECC71"),
-            (c3, str(n_krit),  "INSIDEN KRITIS",  "#E74C3C"),
-            (c4, str(n_prov),  "PROVINSI",        "#F39C12"),
-            (c5, f"{avg_sev:.0f}", "AVG SEVERITY", get_sev_color(avg_sev)),
+            (c1, str(n),              "TOTAL",     "#4FC3F7"),
+            (c2, str(n_geo),          "TERPETAKAN","#2ECC71"),
+            (c3, str(n_krit),         "KRITIS",    "#E74C3C"),
+            (c4, str(n_prov),         "PROVINSI",  "#F39C12"),
+            (c5, str(int(avg_sev)),   "AVG SEV",   get_sev_color(avg_sev)),
         ]:
             with col:
-                st.markdown(f"""
-                <div class="suite-card geo">
-                    <div class="metric-num" style="color:{color}">{val}</div>
-                    <div class="metric-label">{lbl}</div>
-                </div>""", unsafe_allow_html=True)
+                st.markdown(
+                    '<div class="suite-card geo">'
+                    '<div class="metric-num" style="color:' + color + '">' + val + '</div>'
+                    '<div class="metric-label">' + lbl + '</div>'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
 
         st.markdown('<hr style="border-color:#1a3d1a;margin:.8rem 0">',
                     unsafe_allow_html=True)
@@ -281,26 +283,22 @@ def render_geo_intel(monitor_id: int, monitor_kw: str):
                 for _, row in hotspots.head(10).iterrows():
                     sc    = row["avg_sev"]
                     color = get_sev_color(sc)
-                    st.markdown(f"""
-                    <div style="background:#0a0d0a;border:1px solid #1a3d1a;
-                                border-radius:8px;padding:.6rem .9rem;
-                                margin-bottom:5px;display:flex;
-                                align-items:center;gap:10px">
-                        <div style="width:34px;height:34px;border-radius:50%;
-                                    background:{color}22;border:2px solid {color};
-                                    display:flex;align-items:center;
-                                    justify-content:center;font-size:.9rem;
-                                    flex-shrink:0">📍</div>
-                        <div style="flex:1">
-                            <div style="font-weight:500;font-size:.82rem">
-                                {row['location']}</div>
-                            <div style="font-family:'DM Mono',monospace;
-                                        font-size:.68rem;color:rgba(255,255,255,.4)">
-                                {row['province']} · {row['count']} insiden ·
-                                <span style="color:{color}">SEV:{sc:.0f}</span>
-                            </div>
-                        </div>
-                    </div>""", unsafe_allow_html=True)
+                    st.markdown(
+                        '<div style="background:#0a0d0a;border:1px solid #1a3d1a;'
+                        'border-radius:8px;padding:.6rem .9rem;margin-bottom:5px;'
+                        'display:flex;align-items:center;gap:10px">'
+                        '<div style="width:34px;height:34px;border-radius:50%;'
+                        'background:' + color + '22;border:2px solid ' + color + ';'
+                        'display:flex;align-items:center;justify-content:center;'
+                        'font-size:.9rem;flex-shrink:0">📍</div>'
+                        '<div style="flex:1">'
+                        '<div style="font-weight:500;font-size:.82rem">' + str(row["location"]) + '</div>'
+                        '<div style="font-family:DM Mono,monospace;font-size:.68rem;color:rgba(255,255,255,.4)">'
+                        + str(row["province"]) + ' · ' + str(row["count"]) + ' insiden · '
+                        '<span style="color:' + color + '">SEV:' + str(int(sc)) + '</span>'
+                        '</div></div></div>',
+                        unsafe_allow_html=True
+                    )
 
             with col_hmap:
                 fig_hs = go.Figure(go.Scattermap(

@@ -121,18 +121,20 @@ def render_media_intel(monitor_id: int, monitor_kw: str):
         mom_c = "#E74C3C" if vel["momentum"]=="rising" else \
                 "#2ECC71" if vel["momentum"]=="falling" else "#F39C12"
         for col, val, lbl, color in [
-            (c1, str(n),                 "TOTAL ARTIKEL",  "#F39C12"),
-            (c2, str(n_src),             "SUMBER MEDIA",   "#4FC3F7"),
-            (c3, str(len(clusters)),     "NARASI AKTIF",   "#9B59B6"),
-            (c4, f"{vel['articles_per_day']:.1f}", "ARTIKEL/HARI", "#F39C12"),
-            (c5, f"{avg_thr:.0f}",       "AVG THREAT",     get_threat_color(avg_thr)),
+            (c1, str(n),                          "ARTIKEL",  "#F39C12"),
+            (c2, str(n_src),                      "SUMBER",   "#4FC3F7"),
+            (c3, str(len(clusters)),               "NARASI",   "#9B59B6"),
+            (c4, str(vel["articles_per_day"]),     "ART/HARI", "#F39C12"),
+            (c5, str(int(avg_thr)),                "AVG THR",  get_threat_color(avg_thr)),
         ]:
             with col:
-                st.markdown(f"""
-                <div class="suite-card media">
-                    <div class="metric-num" style="color:{color}">{val}</div>
-                    <div class="metric-label">{lbl}</div>
-                </div>""", unsafe_allow_html=True)
+                st.markdown(
+                    '<div class="suite-card media">'
+                    '<div class="metric-num" style="color:' + color + '">' + val + '</div>'
+                    '<div class="metric-label">' + lbl + '</div>'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
 
         st.markdown('<hr style="border-color:#3d3515;margin:.8rem 0">',
                     unsafe_allow_html=True)
@@ -155,15 +157,17 @@ def render_media_intel(monitor_id: int, monitor_kw: str):
                         for kw in t["keywords"][:5]
                     ])
                     with col:
-                        st.markdown(f"""
-                        <div class="intel-box" style="border-color:rgba({rgb},.3)">
-                            <div style="font-family:'DM Mono',monospace;font-size:.65rem;
-                                        color:rgba(255,255,255,.3)">
-                                NARASI {t['id']:02d} · {t['count']} artikel</div>
-                            <div style="color:{color};font-weight:500;margin:4px 0">
-                                {t['label']}</div>
-                            <div>{kws}</div>
-                        </div>""", unsafe_allow_html=True)
+                        st.markdown(
+                            '<div class="intel-box" style="border-color:rgba(' + rgb + ',.3)">'
+                            '<div style="font-family:DM Mono,monospace;font-size:.65rem;'
+                            'color:rgba(255,255,255,.3)">NARASI ' + str(t["id"]).zfill(2) +
+                            ' · ' + str(t["count"]) + ' artikel</div>'
+                            '<div style="color:' + color + ';font-weight:500;margin:4px 0">'
+                            + t["label"] + '</div>'
+                            '<div>' + kws + '</div>'
+                            '</div>',
+                            unsafe_allow_html=True
+                        )
         else:
             st.info("Belum ada klaster narasi — perlu lebih banyak artikel.")
 
@@ -218,17 +222,18 @@ def render_media_intel(monitor_id: int, monitor_kw: str):
             color = NARR_COLORS[t_idx % len(NARR_COLORS)]
             rgb   = _hex_rgb(color)
 
-            st.markdown(f"""
-            <div class="intel-box" style="border-color:rgba({rgb},.4)">
-                <div style="font-family:'DM Mono',monospace;font-size:.7rem;
-                            color:rgba(255,255,255,.3);margin-bottom:4px">NARASI</div>
-                <div style="color:{color};font-size:1rem;font-weight:500">
-                    {t_sel['label']}</div>
-                <div style="font-size:.82rem;color:rgba(255,255,255,.5);margin-top:4px">
-                    {t_sel['count']} artikel terkait ·
-                    Keywords: {', '.join(t_sel['keywords'][:6])}
-                </div>
-            </div>""", unsafe_allow_html=True)
+            kws_str = ", ".join(t_sel["keywords"][:6])
+            st.markdown(
+                '<div class="intel-box" style="border-color:rgba(' + rgb + ',.4)">'
+                '<div style="font-family:DM Mono,monospace;font-size:.7rem;'
+                'color:rgba(255,255,255,.3);margin-bottom:4px">NARASI</div>'
+                '<div style="color:' + color + ';font-size:1rem;font-weight:500">'
+                + t_sel["label"] + '</div>'
+                '<div style="font-size:.82rem;color:rgba(255,255,255,.5);margin-top:4px">'
+                + str(t_sel["count"]) + ' artikel terkait · Keywords: ' + kws_str
+                + '</div></div>',
+                unsafe_allow_html=True
+            )
 
             if df_narr_arts.empty:
                 st.info("Tidak ada artikel yang cocok dengan narasi ini.")
@@ -244,18 +249,20 @@ def render_media_intel(monitor_id: int, monitor_kw: str):
         c1,c2,c3 = st.columns(3)
         mom_color = "#E74C3C" if vel["momentum"]=="rising" else \
                     "#2ECC71" if vel["momentum"]=="falling" else "#F39C12"
+        mom_label = {"rising":"\u2191 NAIK","falling":"\u2193 TURUN","stable":"\u2192 STABIL"}.get(vel["momentum"],"\u2192")
         for col, val, lbl in [
-            (c1, f"{vel['articles_per_day']}", "ARTIKEL/HARI"),
-            (c2, str(vel["unique_sources"]),   "SUMBER UNIK"),
-            (c3, {"rising":"↑ NAIK","falling":"↓ TURUN","stable":"→ STABIL"}.get(
-                  vel["momentum"],"→"), "MOMENTUM"),
+            (c1, str(vel["articles_per_day"]), "ART/HARI"),
+            (c2, str(vel["unique_sources"]),   "SUMBER"),
+            (c3, mom_label,                    "MOMENTUM"),
         ]:
             with col:
-                st.markdown(f"""
-                <div class="suite-card media">
-                    <div class="metric-num" style="color:{mom_color}">{val}</div>
-                    <div class="metric-label">{lbl}</div>
-                </div>""", unsafe_allow_html=True)
+                st.markdown(
+                    '<div class="suite-card media">'
+                    '<div class="metric-num" style="color:' + mom_color + '">' + val + '</div>'
+                    '<div class="metric-label">' + lbl + '</div>'
+                    '</div>',
+                    unsafe_allow_html=True
+                )
 
         # Timeline volume per sumber
         df_ts = df_art.dropna(subset=["published_at"]).copy()

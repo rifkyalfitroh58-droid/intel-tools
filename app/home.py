@@ -34,21 +34,23 @@ def render_home():
     # ── Global metrics ────────────────────────────────────────────────────────
     c1,c2,c3,c4 = st.columns(4)
     for col, val, lbl, color, cc in [
-        (c1, str(stats.get("total",0)),    "TOTAL ARTIKEL",  "#9B59B6", "rgba(155,89,182,.15)"),
-        (c2, str(stats.get("links",0)),    "ARTIKEL TERHUBUNG","#4FC3F7","rgba(79,195,247,.15)"),
-        (c3, str(stats.get("monitors",0)), "MONITOR AKTIF",  "#2ECC71", "rgba(46,204,113,.15)"),
-        (c4, str(unread),                  "ALERT BELUM DIBACA","#E74C3C","rgba(231,76,60,.15)"),
+        (c1, str(stats.get("total",0)),    "TOTAL ARTIKEL",      "#9B59B6", "rgba(155,89,182,.15)"),
+        (c2, str(stats.get("links",0)),    "ARTIKEL TERHUBUNG",  "#4FC3F7", "rgba(79,195,247,.15)"),
+        (c3, str(stats.get("monitors",0)), "MONITOR AKTIF",      "#2ECC71", "rgba(46,204,113,.15)"),
+        (c4, str(unread),                  "ALERT BELUM DIBACA", "#E74C3C", "rgba(231,76,60,.15)"),
     ]:
         with col:
             rgb = _hex_to_rgb(color)
-            st.markdown(f"""
-            <div style="background:{cc};border:1px solid rgba({rgb},.3);
-                        border-radius:10px;padding:1rem;text-align:center">
-                <div style="font-family:'DM Mono',monospace;font-size:1.8rem;
-                            color:{color};font-weight:500">{val}</div>
-                <div style="font-size:.7rem;color:rgba(255,255,255,.4);
-                            margin-top:4px;letter-spacing:.06em">{lbl}</div>
-            </div>""", unsafe_allow_html=True)
+            st.markdown(
+                '<div style="background:' + cc + ';border:1px solid rgba(' + rgb + ',.3);'
+                'border-radius:10px;padding:1rem;text-align:center">'
+                '<div style="font-family:DM Mono,monospace;font-size:1.8rem;'
+                'color:' + color + ';font-weight:500">' + val + '</div>'
+                '<div style="font-size:.7rem;color:rgba(255,255,255,.4);'
+                'margin-top:4px;letter-spacing:.06em">' + lbl + '</div>'
+                '</div>',
+                unsafe_allow_html=True
+            )
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -85,28 +87,33 @@ def render_home():
         n_mon = len(get_monitors(mod))
 
         with (col_left if idx % 2 == 0 else col_right):
-            st.markdown(f"""
-            <div style="background:#0D1B2A;border:1px solid rgba({rgb},.3);
-                        border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:12px;
-                        border-left:3px solid {color}">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start">
-                    <div>
-                        <div style="font-size:1.2rem;margin-bottom:4px">{icon}</div>
-                        <div style="font-family:'DM Mono',monospace;font-size:.85rem;
-                                    font-weight:500;color:{color}">{title}</div>
-                    </div>
-                    <div style="text-align:right;font-family:'DM Mono',monospace;font-size:.7rem;
-                                color:rgba(255,255,255,.35)">
-                        {n_art} artikel<br>{n_mon} monitor
-                    </div>
-                </div>
-                <div style="font-size:.82rem;color:rgba(255,255,255,.55);
-                            margin:8px 0;line-height:1.5">{desc}</div>
-                <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">
-                    {"".join(f'<span style="font-family:DM Mono,monospace;font-size:.65rem;background:rgba({rgb},.1);border:1px solid rgba({rgb},.25);color:{color};border-radius:3px;padding:1px 7px">{f}</span>' for f in features)}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            feat_tags = "".join([
+                '<span style="font-family:DM Mono,monospace;font-size:.65rem;'
+                'background:rgba(' + rgb + ',.1);border:1px solid rgba(' + rgb + ',.25);'
+                'color:' + color + ';border-radius:3px;padding:1px 7px">' + ft + '</span>'
+                for ft in features
+            ])
+            st.markdown(
+                '<div style="background:#0D1B2A;border:1px solid rgba(' + rgb + ',.3);'
+                'border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:12px;'
+                'border-left:3px solid ' + color + '">'
+                '<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+                '<div>'
+                '<div style="font-size:1.2rem;margin-bottom:4px">' + icon + '</div>'
+                '<div style="font-family:DM Mono,monospace;font-size:.85rem;'
+                'font-weight:500;color:' + color + '">' + title + '</div>'
+                '</div>'
+                '<div style="text-align:right;font-family:DM Mono,monospace;font-size:.7rem;'
+                'color:rgba(255,255,255,.35)">'
+                + str(n_art) + ' artikel<br>' + str(n_mon) + ' monitor'
+                '</div></div>'
+                '<div style="font-size:.82rem;color:rgba(255,255,255,.55);'
+                'margin:8px 0;line-height:1.5">' + desc + '</div>'
+                '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">'
+                + feat_tags +
+                '</div></div>',
+                unsafe_allow_html=True
+            )
 
             if st.button(f"{icon} Buka {MODULE_LABELS[mod]}",
                          key=f"open_{mod}", use_container_width=True):
@@ -122,8 +129,7 @@ def render_home():
                 text-transform:uppercase;text-align:center;margin-bottom:1rem">
         ALUR INVESTIGASI YANG DISARANKAN
     </div>
-    <div style="display:flex;align-items:center;justify-content:center;
-                gap:8px;flex-wrap:wrap;padding:.5rem 0">
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:.5rem 0;overflow-x:auto;flex-wrap:nowrap">
         <div style="background:rgba(79,195,247,.1);border:1px solid rgba(79,195,247,.3);
                     border-radius:8px;padding:.6rem 1rem;text-align:center">
             <div style="font-size:1.2rem">👤</div>
