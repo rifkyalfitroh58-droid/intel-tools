@@ -125,7 +125,7 @@ def render_sidebar(current_module: str):
                     # Build links antar modul
                     with st.spinner("Membangun keterhubungan..."):
                         build_links()
-                    st.success(f"✅ {n_saved} artikel · link dibuat!")
+                    st.success("✅ " + str(n_saved) + " artikel dari NewsAPI + GDELT + RSS Indonesia")
                     st.rerun()
             elif fetch_btn and not new_kw.strip():
                 st.warning("Masukkan keyword dulu.")
@@ -173,7 +173,7 @@ def render_sidebar(current_module: str):
                             _clear_cache()
                             with st.spinner("Rebuild links..."):
                                 build_links()
-                            st.success(f"✅ {n_s} artikel baru!")
+                            st.success("✅ " + str(n_s) + " artikel baru (multi-source)")
                             st.rerun()
 
             st.divider()
