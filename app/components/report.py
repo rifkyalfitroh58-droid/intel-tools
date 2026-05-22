@@ -180,7 +180,7 @@ def render_report():
         st.markdown(_section_label("TIMELINE GABUNGAN SEMUA MODUL"), unsafe_allow_html=True)
         df_tl = df_all.dropna(subset=["published_at"]).copy()
         if not df_tl.empty:
-            df_tl["date"] = df_tl["published_at"].dt.date
+            df_tl["date"] = pd.to_datetime(df_tl["published_at"], errors="coerce").dt.date
             fig_tl = go.Figure()
             for mod in ["person", "threat", "geo", "media"]:
                 mod_tl = df_tl[df_tl["module"] == mod].groupby("date").size().reset_index(name="count")

@@ -45,7 +45,7 @@ def _media_velocity(df_art: pd.DataFrame) -> dict:
         if df_ts.empty:
             return {"articles_per_day": 0, "unique_sources": 0,
                     "peak_day": "N/A", "momentum": "stable"}
-        df_ts["date"] = df_ts["published_at"].dt.date
+        df_ts["date"] = pd.to_datetime(df_ts["published_at"], errors="coerce").dt.date
         daily     = df_ts.groupby("date").size()
         apd       = float(daily.mean())
         peak_day  = str(daily.idxmax()) if not daily.empty else "N/A"
@@ -267,7 +267,7 @@ def render_media_intel(monitor_id: int, monitor_kw: str):
         # Timeline volume per sumber
         df_ts = df_art.dropna(subset=["published_at"]).copy()
         if not df_ts.empty:
-            df_ts["date"] = df_ts["published_at"].dt.date
+            df_ts["date"] = pd.to_datetime(df_ts["published_at"], errors="coerce").dt.date
             top_srcs = df_art["source"].value_counts().head(5).index.tolist()
             _pt = {**PLOT_THEME,
                    "plot_bgcolor":  "#070c06",

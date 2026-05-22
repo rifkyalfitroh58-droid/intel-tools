@@ -134,7 +134,7 @@ def render_person_intel(monitor_id: int, monitor_kw: str):
                         unsafe_allow_html=True)
             df_ts = df_art.dropna(subset=["published_at"]).copy()
             if not df_ts.empty:
-                df_ts["date"] = df_ts["published_at"].dt.date
+                df_ts["date"] = pd.to_datetime(df_ts["published_at"], errors="coerce").dt.date
                 tl = df_ts.groupby("date").agg(
                     count=("id","count"),
                     avg_sent=("sentiment","mean"),

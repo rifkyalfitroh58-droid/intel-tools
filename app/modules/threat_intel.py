@@ -29,7 +29,7 @@ def _compute_spread(df_art):
         df_ts = df_art.dropna(subset=["published_at"]).copy()
         if df_ts.empty:
             return {"score":0,"velocity":0,"peak_hour":"N/A","trend":"stable"}
-        df_ts["hour"] = df_ts["published_at"].dt.floor("h")
+        df_ts["hour"] = pd.to_datetime(df_ts["published_at"], errors="coerce").dt.floor("h")
         hourly = df_ts.groupby("hour").size()
         velocity  = float(hourly.mean())
         peak_hour = str(hourly.idxmax().strftime("%d %b %H:00")) if not hourly.empty else "N/A"
@@ -216,7 +216,7 @@ def render_threat_intel(monitor_id: int, monitor_kw: str):
                     unsafe_allow_html=True)
         df_ts = df_art.dropna(subset=["published_at"]).copy()
         if not df_ts.empty:
-            df_ts["date"] = df_ts["published_at"].dt.date
+            df_ts["date"] = pd.to_datetime(df_ts["published_at"], errors="coerce").dt.date
             tl = df_ts.groupby("date").agg(
                 count=("id","count"),
                 avg_threat=("threat_score","mean"),
